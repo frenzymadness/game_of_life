@@ -98,9 +98,9 @@ def on_mouse_press(x, y, button, modifiers):
 def on_key_press(symbol, modifiers):
     if symbol == key.SPACE:
         if game.running:
-            pyglet.clock.schedule_interval(game.next_generation, SPEED)
-        else:
             pyglet.clock.unschedule(game.next_generation)
+        else:
+            pyglet.clock.schedule_interval(game.next_generation, SPEED)
         game.running = not game.running
     if symbol == key.RIGHT:
         game.running = False
