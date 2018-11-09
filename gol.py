@@ -78,6 +78,20 @@ class Game:
         print(f'UnderPopulation: {underpop}, OverPopulation: {overpop}',
               f'Staied alive: {stay}, Reborn {reprod}')
 
+    def start(self):
+        pyglet.clock.schedule_interval(self.next_generation, self.speed)
+        self.running = True
+
+    def stop(self):
+        pyglet.clock.unschedule(self.next_generation)
+        self.running = False
+
+    def toogle_stop_start(self):
+        if self.running:
+            self.stop()
+        else:
+            self.start()
+
 
 def draw_square(x, y, size):
     pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
@@ -103,11 +117,7 @@ def on_mouse_press(x, y, button, modifiers):
 @window.event
 def on_key_press(symbol, modifiers):
     if symbol == key.SPACE:
-        if game.running:
-            pyglet.clock.unschedule(game.next_generation)
-        else:
-            pyglet.clock.schedule_interval(game.next_generation, SPEED)
-        game.running = not game.running
+        game.toogle_stop_start()
     if symbol == key.RIGHT:
         game.running = False
         game.next_generation(None)
