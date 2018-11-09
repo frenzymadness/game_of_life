@@ -4,6 +4,7 @@ import pyglet
 from pyglet.window import key, Window
 import numpy
 import sys
+from datetime import datetime
 
 WIDTH = 800
 HEIGHT = 800
@@ -14,15 +15,17 @@ window = Window(WIDTH, HEIGHT)
 
 
 class Game:
-    def __init__(self, size_x, size_y, speed, init=None):
+    def __init__(self, size_x, size_y, speed, init=None, filename=None):
         self.speed = speed
         self.running = False
 
-        if init is None:
-            self.state = numpy.zeros((size_x, size_y), dtype='bool')
-        elif init == 'random':
+        if init == 'random':
             self.state = numpy.random.choice([False, True],
                                              size=(size_x, size_y))
+        elif init == 'file':
+            self.state = numpy.load(filename)
+        else:
+            self.state = numpy.zeros((size_x, size_y), dtype='bool')
 
     def toogle_state(self, cell):
         self.state[cell] = not self.state[cell]
@@ -42,6 +45,9 @@ class Game:
                 result += int(self.state[x_neigh, y_neigh])
 
         return result
+
+    def save_state_to_file(self):
+        numpy.save(datetime.now().isoformat(), self.state)
 
     def next_generation(self, dt):
         print("Generating next generation: ", end='')
@@ -105,12 +111,24 @@ def on_key_press(symbol, modifiers):
     if symbol == key.RIGHT:
         game.running = False
         game.next_generation(None)
+    if symbol == ord('s'):
+        game.save_state_to_file()
+        print("Game saved!")
 
 
 if __name__ == "__main__":
     init = None
-    if len(sys.argv) > 1 and sys.argv[1] == 'random':
-        init = 'random'
+    filename = None
 
-    game = Game(WIDTH//CELL_SIZE, HEIGHT//CELL_SIZE, SPEED, init=init)
+    if len(sys.argv) > 1:
+        init = sys.argv[1]
+        if init == 'file':
+            try:
+                filename = sys.argv[2]
+            except IndexError:
+                print("Error: No file specified!")
+                sys.exit(1)
+
+    game = Game(WIDTH//CELL_SIZE, HEIGHT//CELL_SIZE, SPEED, init=init,
+                filename=filename)
     pyglet.app.run()
