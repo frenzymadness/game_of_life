@@ -19,13 +19,14 @@ class Game:
         self.speed = speed
         self.running = False
 
-        if init == 'random':
-            self.state = numpy.random.choice([False, True],
-                                             size=(size_x, size_y))
-        elif init == 'file':
+        if init == "random":
+            self.state = numpy.random.choice(
+                [False, True], size=(size_x, size_y)
+            )
+        elif init == "file":
             self.state = numpy.load(filename)
         else:
-            self.state = numpy.zeros((size_x, size_y), dtype='bool')
+            self.state = numpy.zeros((size_x, size_y), dtype="bool")
 
     def toogle_state(self, cell):
         self.state[cell] = not self.state[cell]
@@ -50,7 +51,7 @@ class Game:
         numpy.save(datetime.now().isoformat(), self.state)
 
     def next_generation(self, dt):
-        print("Generating next generation: ", end='')
+        print("Generating next generation: ", end="")
         underpop, overpop, stay, reprod = 0, 0, 0, 0
 
         next_generation = numpy.zeros_like(self.state, dtype=bool)
@@ -75,8 +76,10 @@ class Game:
 
         self.state = next_generation
 
-        print(f'UnderPopulation: {underpop}, OverPopulation: {overpop}',
-              f'Staied alive: {stay}, Reborn {reprod}')
+        print(
+            f"UnderPopulation: {underpop}, OverPopulation: {overpop}",
+            f"Staied alive: {stay}, Reborn {reprod}",
+        )
 
     def start(self):
         pyglet.clock.schedule_interval(self.next_generation, self.speed)
@@ -102,8 +105,11 @@ class Game:
 
 
 def draw_square(x, y, size):
-    pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
-                         ('v2f', [x, y, x+size, y, x+size, y+size, x, y+size]))
+    pyglet.graphics.draw(
+        4,
+        pyglet.gl.GL_QUADS,
+        ("v2f", [x, y, x + size, y, x + size, y + size, x, y + size]),
+    )
 
 
 @window.event
@@ -113,7 +119,7 @@ def on_draw():
     for ri, row in enumerate(game.state):
         for ci, cell in enumerate(row):
             if cell:
-                draw_square(ri*CELL_SIZE, ci*CELL_SIZE, CELL_SIZE)
+                draw_square(ri * CELL_SIZE, ci * CELL_SIZE, CELL_SIZE)
 
 
 @window.event
@@ -129,7 +135,7 @@ def on_key_press(symbol, modifiers):
     if symbol == key.RIGHT:
         game.running = False
         game.next_generation(None)
-    if symbol == ord('s'):
+    if symbol == ord("s"):
         game.save_state_to_file()
         print("Game saved!")
     if symbol == key.UP:
@@ -146,13 +152,18 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         init = sys.argv[1]
-        if init == 'file':
+        if init == "file":
             try:
                 filename = sys.argv[2]
             except IndexError:
                 print("Error: No file specified!")
                 sys.exit(1)
 
-    game = Game(WIDTH//CELL_SIZE, HEIGHT//CELL_SIZE, SPEED, init=init,
-                filename=filename)
+    game = Game(
+        WIDTH // CELL_SIZE,
+        HEIGHT // CELL_SIZE,
+        SPEED,
+        init=init,
+        filename=filename,
+    )
     pyglet.app.run()
