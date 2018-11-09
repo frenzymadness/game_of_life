@@ -92,6 +92,14 @@ class Game:
         else:
             self.start()
 
+    def speed_change(self, change):
+        if self.speed + change > 0.0:
+            self.speed += change
+            self.speed = round(self.speed, 1)
+        if self.running:
+            self.stop()
+            self.start()
+
 
 def draw_square(x, y, size):
     pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
@@ -124,6 +132,12 @@ def on_key_press(symbol, modifiers):
     if symbol == ord('s'):
         game.save_state_to_file()
         print("Game saved!")
+    if symbol == key.UP:
+        game.speed_change(-0.1)
+        print(f"Game speed: {game.speed}")
+    if symbol == key.DOWN:
+        game.speed_change(+0.1)
+        print(f"Game speed: {game.speed}")
 
 
 if __name__ == "__main__":
